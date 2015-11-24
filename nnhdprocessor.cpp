@@ -111,24 +111,41 @@ NNHDProcessor::NNHDProcessor()
 
 }
 
+void NNHDProcessor::generateFeatureFromFile(const QString filename, cv::Mat& features){
+    std::cout << "WARNING: load featrue from file! Cannot display picture!" << std::endl;
+    ifstream file(filename.toUtf8().constData());
 
+    const int ROWS = 45;
+    const int COLS = 701;
+
+    features = cv::Mat(ROWS,COLS,CV_32F);
+    double tempD;
+    for(int row_index = 0; row_index < ROWS; row_index++){
+        for(int col_index = 0; col_index < COLS; col_index++){
+            file >> tempD;
+            features.at<float>(row_index,col_index) = tempD;
+        }
+    }
+}
 
 void NNHDProcessor::main(){
     // 0. 全局参数
-        int maxClusters = 4;
+        int maxClusters = 200;
         double search_radius =  0.08; //; + 0.01*(iteration+1);
         int nMaxSearch = 128;
+        std::cout << "start" << std::endl;
 
 
         // 1. 读入影像
-        string imgfile = "/home/netbeen/桌面/img6.jpg";
+        string imgfile = "/home/netbeen/桌面/周叔项目/src.png";
         cv::Mat img = cv::imread(imgfile);
         int imgRescaleW = img.cols/this->scaleFactor;
         int imgRescaleH = img.rows/this->scaleFactor;
         cv::resize(img, img, cv::Size(imgRescaleW, imgRescaleH));
+        std::cout << "1 end" << std::endl;
+
 
         clock_t start_time=clock();
-        //waitKey();
 
         // 2. 取出所有点的rgb构成特征空间
         if(!img.isContinuous()) {
@@ -139,16 +156,20 @@ void NNHDProcessor::main(){
         int imgH = img.rows - patchSize + 1;
         int numPts = imgW*imgH;
         int nChannels = img.channels();
-        int DIMENSION = nChannels*patchSize*patchSize;
+        int DIMENSION = 8*5;
 
         cv::Mat features = cv::Mat(numPts, DIMENSION, CV_32F);
+        std::cout << "cv::Mat features = cv::Mat(numPts, DIMENSION, CV_32F); end" << std::endl;
         if(!features.isContinuous()) {
             cout<<"Error: not a continuous image!!!"<<endl;
         }
 
-        GetFeatures(features, img, patchSize);
+        //GetFeatures(features, img, patchSize);
+        std::cout << "GetFeatures(features, img, patchSize); end" << std::endl;
+        this->generateFeatureFromFile("/home/netbeen/桌面/博剑文件夹/attribute_1.txt",features);
 
-        //cout<<"features = "<<features<<endl;
+        std::cout<<"features = "<<features<<std::endl;
+        std::cout << "2 end" << std::endl;
 
         // 3. 构建KDTree，计算search radius
         cv::flann::Index myKdTree;
@@ -434,6 +455,4 @@ void NNHDProcessor::imgUndoScale(){
     }
     cv::imshow("imgWithoutScale",imgWithoutScale);
     cv::imwrite("label.png",imgWithoutScale);
-
-
 }

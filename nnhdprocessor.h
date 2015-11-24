@@ -2,6 +2,7 @@
 #define NNHDPROCESSOR_H
 
 #include <opencv2/opencv.hpp>
+#include <QString>
 
 class NNHDProcessor
 {
@@ -10,6 +11,8 @@ public:
     void main();
     void imgCompete();
     void imgUndoScale();
+
+    void generateFeatureFromFile(const QString filename, cv::Mat& features);
 
 private:
     const double scaleFactor = 2.0;   //缩放参数
