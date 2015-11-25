@@ -16,7 +16,7 @@ public:
 
 private:
     const double scaleFactor = 2.0;   //缩放参数
-    const int patchSize = 5;
+    const int patchSize = 1;
     cv::Mat imgOut;
     cv::Mat imgCompeted;
     cv::Mat imgWithoutScale;

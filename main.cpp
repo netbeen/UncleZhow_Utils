@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     //thresholdProcessor->main();
 
     NNHDProcessor* nNHDProcessor = new NNHDProcessor();
-    //nNHDProcessor->main();
+    nNHDProcessor->main();
 
     FindSimilarPoint* findSimilarPoint = new FindSimilarPoint();
     //findSimilarPoint->main();
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     //gCApplication->main();
 
     GraphCut* graphCut = new GraphCut();
-    graphCut->main2();
+    //graphCut->main2();
 
     SHJ_KDTree* sHJ_KDTree = new SHJ_KDTree();
     //sHJ_KDTree->main();

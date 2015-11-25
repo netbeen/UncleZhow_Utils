@@ -46,39 +46,24 @@ int cmp(const std::pair<int, double> &x, const std::pair<int, double> &y )
 
 void GetFeatures(cv::Mat &features, cv::Mat &img, int patchSize)
 {
+    std::cout << "Start GetFeatures" << std::endl;
     int imgW = img.cols - patchSize + 1;
     int imgH = img.rows - patchSize + 1;
     int numPts = imgW*imgH;
     int nChannels = img.channels();
     int DIMENSION = nChannels*patchSize*patchSize;
 
-    double* pPerturbation = nullptr;
-    if(patchSize < 2) {
-        pPerturbation = new double[numPts*DIMENSION];
-        get_rand(pPerturbation, numPts*DIMENSION);
-    }
+    features = cv::Mat(numPts, DIMENSION, CV_32F);
 
-    float* pf = (float*) features.data;
-    uchar* data = (uchar*) img.data; //img.ptr<uchar>(0);
-
-    for(int i=0; i<imgH; i++) {
-        for(int j=0; j<imgW; j++) {
-            int n = 0;
-            for(int y = 0; y<patchSize; y++) {
-                for(int x = 0; x<patchSize; x++) {
-                    for(int k=0; k<nChannels; k++, n++) {
-                        double intensity = (double) data[((i+y)*img.cols+(j+x))*nChannels + k];
-                        if(pPerturbation != nullptr)
-                            intensity += pPerturbation[(i*imgW+j)*DIMENSION +n];
-                        pf[(i*imgW+j)*DIMENSION + n] = intensity / 255.0 / patchSize;
-                    }
+    for(int y_offset = 0; y_offset < imgH; y_offset++)
+        for(int x_offset = 0; x_offset < imgW; x_offset++)
+            for(int y_offset_patch = 0; y_offset_patch < patchSize; y_offset_patch++)
+                for(int x_offset_patch = 0; x_offset_patch < patchSize; x_offset_patch++){
+                    cv::Vec3b currentColor = img.at<cv::Vec3b>(y_offset+y_offset_patch,x_offset+x_offset_patch);
+                    features.at<float>(y_offset*imgW+x_offset, y_offset_patch*patchSize+x_offset_patch+0) = (float)currentColor[0];
+                    features.at<float>(y_offset*imgW+x_offset, y_offset_patch*patchSize+x_offset_patch+1) = (float)currentColor[1];
+                    features.at<float>(y_offset*imgW+x_offset, y_offset_patch*patchSize+x_offset_patch+2) = (float)currentColor[2];
                 }
-            }
-        }
-    }
-
-    if(pPerturbation != nullptr)
-        delete[] pPerturbation;
 }
 
 double GetSearchRadius(cv::flann::Index &myKdTree, cv::Mat &features, int nMaxSearch, float percent = 0.02f)
@@ -130,19 +115,17 @@ void NNHDProcessor::generateFeatureFromFile(const QString filename, cv::Mat& fea
 
 void NNHDProcessor::main(){
     // 0. 全局参数
-        int maxClusters = 200;
+        int maxClusters = 2;
         double search_radius =  0.08; //; + 0.01*(iteration+1);
         int nMaxSearch = 128;
-        std::cout << "start" << std::endl;
 
 
         // 1. 读入影像
-        string imgfile = "/home/netbeen/桌面/周叔项目/src.png";
+        string imgfile = "/home/netbeen/桌面/周叔项目/img.png";
         cv::Mat img = cv::imread(imgfile);
         int imgRescaleW = img.cols/this->scaleFactor;
         int imgRescaleH = img.rows/this->scaleFactor;
         cv::resize(img, img, cv::Size(imgRescaleW, imgRescaleH));
-        std::cout << "1 end" << std::endl;
 
 
         clock_t start_time=clock();
@@ -156,24 +139,14 @@ void NNHDProcessor::main(){
         int imgH = img.rows - patchSize + 1;
         int numPts = imgW*imgH;
         int nChannels = img.channels();
-        int DIMENSION = 8*5;
+        int DIMENSION = patchSize*patchSize*nChannels;
 
-        cv::Mat features = cv::Mat(numPts, DIMENSION, CV_32F);
-        std::cout << "cv::Mat features = cv::Mat(numPts, DIMENSION, CV_32F); end" << std::endl;
-        if(!features.isContinuous()) {
-            cout<<"Error: not a continuous image!!!"<<endl;
-        }
-
-        //GetFeatures(features, img, patchSize);
-        std::cout << "GetFeatures(features, img, patchSize); end" << std::endl;
-        this->generateFeatureFromFile("/home/netbeen/桌面/博剑文件夹/attribute_1.txt",features);
-
-        std::cout<<"features = "<<features<<std::endl;
-        std::cout << "2 end" << std::endl;
+        cv::Mat features;
+        GetFeatures(features, img, patchSize);
 
         // 3. 构建KDTree，计算search radius
         cv::flann::Index myKdTree;
-        myKdTree.build(features, cv::flann::KDTreeIndexParams(16));
+        myKdTree.build(features, cv::flann::KDTreeIndexParams(128));
 
         search_radius = GetSearchRadius(myKdTree, features, nMaxSearch);
         std::cout << " Search Radius: " << search_radius << std::endl;
@@ -192,7 +165,6 @@ void NNHDProcessor::main(){
             std::vector<float> queryPos(DIMENSION, 0.0);
             for(int k=0; k<DIMENSION; k++)
                 queryPos[k] = pf[i*DIMENSION+k];
-            //cout<<"queryPos = "<<queryPos<<endl;
 
             std::vector<int> indices;
             std::vector<float> dists;
@@ -390,19 +362,6 @@ void NNHDProcessor::main(){
 
         cv::imshow("Input", img);
         cv::imshow("Output", imgOut);
-
-        /*vector<int> labels;
-        ofstream outputFileStream("outputLabel.txt",ios::out);
-        ofstream outputDensity("outputDensity.txt", ios::out);
-        ofstream outputDelta("outputDelta.txt", ios::out);
-        for(int i=0; i<numPts; i++) {
-            outputFileStream<<v_points[i].label<<endl;
-            outputDensity<<v_points[i].density<<endl;
-            outputDelta<<v_points[i].dis2NNHD<<endl;
-        }
-        outputDelta.close();
-        outputDensity.close();
-        outputFileStream.close();*/
 
 
         this->imgCompete();
