@@ -92,7 +92,6 @@ void MyGabor::main(){
 
 Mat MyGabor::getMyGabor(int width, int height, int U, int V, double Kmax, double f,double sigma, int ktype, const string kernel_name)
 {
-
     int half_width = width / 2;
     int half_height = height / 2;
     double Qu = PI*U/8;

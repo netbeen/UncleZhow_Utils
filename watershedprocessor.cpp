@@ -124,8 +124,9 @@ void function20151121(const cv::Mat& markGray){
 }
 
 void WatershedProcessor::main(){
-    cv::Mat img = cv::imread("/home/netbeen/桌面/周叔项目/color histogram（256bins），textons（200  to 200 bins）(patchSize=16).png");
-    cv::Mat mark = cv::imread("/home/netbeen/桌面/周叔项目/color histogram（256bins），textons（200  to 200 bins）(patchSize=16)-mark.png",cv::IMREAD_GRAYSCALE);
+    cv::Mat img = cv::imread("/home/netbeen/桌面/周叔项目/stone.png");
+    cv::Mat mark = cv::imread("/home/netbeen/桌面/周叔项目/trg_label_stone.png",cv::IMREAD_GRAYSCALE);
+    img = img(cv::Rect(0,0,mark.cols,mark.rows));
     mark.convertTo(mark,CV_32S);
     this->watershed(img,mark);
     mark.convertTo(mark,CV_8U);

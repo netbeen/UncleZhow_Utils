@@ -121,7 +121,7 @@ void NNHDProcessor::main(){
 
 
         // 1. 读入影像
-        string imgfile = "/home/netbeen/桌面/周叔项目/img.png";
+        string imgfile = "/home/netbeen/桌面/周叔项目/img3.jpg";
         cv::Mat img = cv::imread(imgfile);
         int imgRescaleW = img.cols/this->scaleFactor;
         int imgRescaleH = img.rows/this->scaleFactor;
@@ -266,7 +266,6 @@ void NNHDProcessor::main(){
             }
         }
 
-
         // 7. 计算 delta*rho = dis2nnhd*density
         std::vector<std::pair<int, double> > v_deltarho;
         v_deltarho.assign(numPts, std::pair<int, double>(-1, 0.0));
@@ -283,14 +282,6 @@ void NNHDProcessor::main(){
 
         // sort delta*rho
         sort(v_deltarho.begin(), v_deltarho.end(), cmp);
-
-        // 11. Get number of clusters
-
-        // get 10*median as threshold
-    // 	int medianindex =  numPts / 2;
-    // 	while (v_deltarho[medianindex].second <= 0)
-    // 		medianindex /= 2.0;
-    // 	double thres = 10.0*v_deltarho[medianindex].second;
 
         std::vector<int> centerofCluster;
         centerofCluster.push_back(v_density_Descend.begin()->first);
@@ -364,8 +355,14 @@ void NNHDProcessor::main(){
         cv::imshow("Output", imgOut);
 
 
+
         this->imgCompete();
-        this->imgUndoScale();
+        //this->imgUndoScale();
+
+
+        cv::imwrite("Input.png", img);
+        cv::imwrite("imgCompeted.png", this->imgCompeted);
+
         waitKey();
 }
 

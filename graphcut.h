@@ -16,18 +16,22 @@ class GraphCut
 public:
     GraphCut();
     void main();
-    void main2();
 
 private:
-    const int CLASS_NUMBER = 2;
-    const int scaleFactor = 1;
-    cv::Mat initGuessGray;
+    int CLASS_NUMBER;
+    int scaleFactor = 1;
     cv::Mat rawImage;
-    cv::Mat resultLabelGray;
-    std::vector<uchar> label2GrayValue;
+
+    cv::Mat initGuess;
+    cv::Mat resultLabel;
+    std::vector<cv::Vec3b> label2Value;
+    cv::Mat GMMProbability;
+    cv::Mat initGuessMask;
 
     bool checkUserMarkValid(const cv::Mat& userMark);
     void GridGraph_Individually(int width,int height,int num_pixels,int num_labels);
+    void generateGMMProbability();
+    void generateInitGuessMask();
 };
 
 #endif // GRAPHCUT_H

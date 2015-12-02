@@ -9,35 +9,36 @@
 #include "graphcut.h"
 #include "grabcut.h"
 #include "shj_kdtree.h"
+#include "generateneighborxml.h"
+#include "kmeans.h"
+#include "readsuperpixeldat.h"
 
 int main(int argc, char *argv[])
 {
-
     WatershedProcessor* watershedProcessor = new WatershedProcessor();
-    //watershedProcessor->main();
-
     ThresholdProcessor* thresholdProcessor = new ThresholdProcessor();
-    //thresholdProcessor->main();
-
     NNHDProcessor* nNHDProcessor = new NNHDProcessor();
-    nNHDProcessor->main();
-
     FindSimilarPoint* findSimilarPoint = new FindSimilarPoint();
-    //findSimilarPoint->main();
-
     PatchMatchProcessor* patchMatchProcessor = new PatchMatchProcessor();
-    //patchMatchProcessor->main();
-
     MyGabor* myGabor = new MyGabor();
-    //myGabor->main();
-
     GCApplication* gCApplication = new GCApplication();     //grabcut
-    //gCApplication->main();
-
-    GraphCut* graphCut = new GraphCut();
-    //graphCut->main2();
-
+    GraphCut* graphCut = new GraphCut();    //boykov graph cut
+    KMeans* kMeans = new KMeans();
     SHJ_KDTree* sHJ_KDTree = new SHJ_KDTree();
+    GenerateNeighborXML* generateNeighborXML = new GenerateNeighborXML();
+    ReadSuperPixelDat* readSuperPixelDat = new ReadSuperPixelDat();
+
+    //watershedProcessor->main();
+    //thresholdProcessor->main();
+    //nNHDProcessor->main();
+    //findSimilarPoint->main();
+    //patchMatchProcessor->main();
+    //myGabor->main();
+    //gCApplication->main();     //grabcut
+    //graphCut->main();    //boykov graph cut
+    //kMeans->main();
     //sHJ_KDTree->main();
+    //generateNeighborXML->main();
+    readSuperPixelDat->main();
 }
 

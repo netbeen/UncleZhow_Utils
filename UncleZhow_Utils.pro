@@ -1,4 +1,4 @@
-QT += core
+QT += core xml
 QT -= gui
 
 TARGET = UncleZhow_Utils
@@ -22,7 +22,12 @@ SOURCES += main.cpp \
     gco-v3.0/graph.cpp \
     gco-v3.0/LinkedBlockList.cpp \
     gco-v3.0/maxflow.cpp \
-    shj_kdtree.cpp
+    shj_kdtree.cpp \
+    generateneighborxml.cpp \
+    gmm.cpp \
+    kmeans.cpp \
+    readsuperpixeldat.cpp \
+    ../../桌面/SLICSuperpixels_VC2008_SLICO_15Jun2013/SLICSuperpixels/SLIC.cpp
 
 
 HEADERS += \
@@ -40,7 +45,12 @@ HEADERS += \
     gco-v3.0/GCoptimization.h \
     gco-v3.0/graph.h \
     gco-v3.0/LinkedBlockList.h \
-    shj_kdtree.h
+    shj_kdtree.h \
+    generateneighborxml.h \
+    gmm.h \
+    kmeans.h \
+    readsuperpixeldat.h \
+    ../../桌面/SLICSuperpixels_VC2008_SLICO_15Jun2013/SLICSuperpixels/SLIC.h
 
 
 LIBS += /usr/local/lib/libopencv_core.so    \
